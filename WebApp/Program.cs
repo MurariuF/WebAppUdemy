@@ -1,4 +1,4 @@
-
+using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json.Serialization;
 
 namespace WebApp
@@ -44,8 +44,14 @@ namespace WebApp
             //Add CORS
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
-
             app.MapControllers();
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(),"Photos")),
+                RequestPath = "/Photos"
+            });
 
             app.Run();
         }
