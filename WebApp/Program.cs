@@ -1,4 +1,6 @@
 
+using Newtonsoft.Json.Serialization;
+
 namespace WebApp
 {
     public class Program
@@ -14,6 +16,18 @@ namespace WebApp
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            //Enable CORS
+            builder.Services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            });
+
+            //JSON Serializer
+            builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore)
+                .AddNewtonsoftJson(options =>
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -26,6 +40,9 @@ namespace WebApp
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+
+            //Add CORS
+            app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
 
             app.MapControllers();
