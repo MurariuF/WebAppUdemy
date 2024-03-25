@@ -16,6 +16,10 @@ export class DepartmentComponent implements OnInit {
   DepartmentId: number = 0;
   DepartmendName: string = "";
 
+  DepartmentIdFilter="";
+  DepartmentNameFilter="";
+  DepartmentsWithoutFilter:any=[];
+
   ngOnInit(): void {
     this.refreshList();
   }
@@ -23,7 +27,8 @@ export class DepartmentComponent implements OnInit {
   refreshList(){
     this.http.get<any>('https://localhost:7147/api/Department')
     .subscribe(data => {
-      this.departments=data
+      this.departments = data;
+      this.DepartmentsWithoutFilter = data;
     });
   }
 
@@ -72,5 +77,30 @@ export class DepartmentComponent implements OnInit {
           this.refreshList();
       })
     }
+  }
+
+  FilterFn(){
+    var DepartmentIdFilter = this.DepartmentIdFilter;
+    var DepartmentNameFilter = this.DepartmentNameFilter;
+
+    this.departments = this.DepartmentsWithoutFilter.filter(
+      function(el: any){
+        return el.DepartmentId.toString().toLowerCase().includes(
+          DepartmentIdFilter.toString().toLowerCase()
+        )&& 
+          el.DepartmentName.toString().toLowerCase().includes(
+          DepartmentNameFilter.toString().toLowerCase())
+      }
+    );
+  }
+
+  sortResult(prop:any, asc:any){
+    this.departments = this.DepartmentsWithoutFilter.sort(function(a:any, b:any){
+      if(asc){
+        return (a[prop] > b[prop]) ?1 : ((a[prop] < b[prop]) ?-1: 0);
+      }else{
+        return (b[prop] > a[prop]) ?1 : ((b[prop] < a[prop]) ?-1: 0);
+      }
+    });
   }
 }
